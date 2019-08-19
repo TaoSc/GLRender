@@ -1,6 +1,6 @@
 #include "Mesh.h"
 
-Mesh::Mesh(std::vector<VertexStruct> const& vertices, std::vector<unsigned int> const& indices, std::vector<Texture> const& textures) : m_vertices(vertices), m_indices(indices), m_textures(textures)
+Mesh::Mesh(std::vector<VertexStruct> const& vertices, std::vector<unsigned int> const& indices, std::vector<Texture *> const& textures) : m_vertices(vertices), m_indices(indices), m_textures(textures)
 {
 	setupMesh();
 }
@@ -13,14 +13,14 @@ void Mesh::Draw(Shader const& shader, bool const& textures) const
 			glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(i));
 
 			unsigned int number;
-			std::string name = m_textures[i].type();
+			std::string name = m_textures[i]->type();
 			if (name == "diffuse")
 				number = diffuse_nb++;
 			else if (name == "specular")
 				number = specular_nb++;
 
 			shader.setUni(("material." + name/* + std::to_string(number) */), static_cast<int>(i));
-			glBindTexture(GL_TEXTURE_2D, m_textures[i].id());
+			glBindTexture(GL_TEXTURE_2D, m_textures[i]->id());
 		}
 		glActiveTexture(GL_TEXTURE0);
 	}

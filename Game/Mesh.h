@@ -20,13 +20,13 @@ constexpr GLuint VERTEX_POS_ATTR = 0, VERTEX_NORMAL_ATTR = 1, VERTEX_TEX_ATTR = 
 
 class Mesh {
 public:
-	Mesh(std::vector<VertexStruct> const& vertices, std::vector<unsigned int> const& indices, std::vector<Texture> const& textures);
+	Mesh(std::vector<VertexStruct> const& vertices, std::vector<unsigned int> const& indices, std::vector<Texture *> const& textures);
 	void Draw(Shader const& shader, bool const& textures = true) const;
 
 private:
 	std::vector<VertexStruct> const m_vertices;
 	std::vector<GLuint> const m_indices;
-	std::vector<Texture> const m_textures;
+	std::vector<Texture *> const m_textures;
 
 	unsigned int m_vao, m_vbo, m_ebo;
 

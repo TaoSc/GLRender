@@ -43,7 +43,7 @@ Mesh Model::processMesh(aiMesh* const& mesh, const aiScene* scene, GLuint const&
 {
 	std::vector<VertexStruct> vertices;
 	std::vector<unsigned int> indices;
-	std::vector<Texture> textures;
+	std::vector<Texture *> textures;
 
 
 	for (size_t i = 0; i < mesh->mNumVertices; i++)
@@ -86,19 +86,19 @@ Mesh Model::processMesh(aiMesh* const& mesh, const aiScene* scene, GLuint const&
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-		std::vector<Texture> const& diffuse_maps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "diffuse", texture_wrapping);
+		std::vector<Texture *> const& diffuse_maps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "diffuse", texture_wrapping);
 		textures.insert(textures.end(), diffuse_maps.begin(), diffuse_maps.end());
 
-		std::vector<Texture> const& specular_maps = loadMaterialTextures(material, aiTextureType_SPECULAR, "specular", texture_wrapping);
+		std::vector<Texture *> const& specular_maps = loadMaterialTextures(material, aiTextureType_SPECULAR, "specular", texture_wrapping);
 		textures.insert(textures.end(), specular_maps.begin(), specular_maps.end());
 	}
 
 	return Mesh(vertices, indices, textures);
 }
 
-std::vector<Texture> Model::loadMaterialTextures(aiMaterial* const& material, aiTextureType const& type, std::string const& type_name, GLuint const& texture_wrapping)
+std::vector<Texture *> Model::loadMaterialTextures(aiMaterial* const& material, aiTextureType const& type, std::string const& type_name, GLuint const& texture_wrapping)
 {
-	std::vector<Texture> textures;
+	std::vector<Texture *> textures;
 	
 	for (unsigned int i = 0; i < material->GetTextureCount(type); i++)
 	{
@@ -107,8 +107,8 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* const& material, ai
 		std::string file_loc = m_directory + path.C_Str();
 		
 		bool skip = false;
-		for (Texture const& texture_loaded : m_textures_loaded) {
-			if (std::strcmp(texture_loaded.path().c_str(), file_loc.c_str()) == 0) {
+		for (Texture * const& texture_loaded : m_textures_loaded) {
+			if (std::strcmp(texture_loaded->path().c_str(), file_loc.c_str()) == 0) {
 				textures.push_back(texture_loaded);
 				skip = true;
 				break;
@@ -117,9 +117,9 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* const& material, ai
 		
 		if (!skip) {
 			
-			Texture texture{ file_loc };
+			Texture *texture = new Texture(file_loc);
 			
-			if (!texture.load(texture_wrapping))
+			if (!texture->load(texture_wrapping))
 				std::cout << "Texture \"" << file_loc << "\" failed loading." << std::endl;
 			
 			//std::cout << texture.id() << " - " << type_name << " - " << file_loc << std::endl;
