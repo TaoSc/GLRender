@@ -63,14 +63,20 @@ void main()
 }
 
 vec4 Phong(Light light, vec3 light_dir, vec3 normal, vec3 view_dir) {
+	vec4 sampled_texture = texture(material.specular, vertex_tex_coord);
+
 	vec3 reflect_dir = reflect(-light_dir, normal);
 	float spec_component = pow(max(dot(view_dir, reflect_dir), 0.f), material.shininess);
-	vec4 specular = texture(material.specular, vertex_tex_coord) * vec4(spec_component * light.specular, 1.0f);
+	vec4 specular = vec4(sampled_texture.xyz * spec_component * light.specular, sampled_texture.w);
+
+	
+	sampled_texture = texture(material.diffuse, vertex_tex_coord);
 
 	float diffuse_strength = max(dot(normal, light_dir), 0.f);
-	vec4 diffuse = texture(material.diffuse, vertex_tex_coord) * vec4(diffuse_strength * light.diffuse, 1.0f);
+	vec4 diffuse = vec4(sampled_texture.xyz * diffuse_strength * light.diffuse, sampled_texture.w);
 
-	vec4 ambient = texture(material.diffuse, vertex_tex_coord) * vec4(light.ambient, 1.0f);
+	vec4 ambient = vec4(sampled_texture.xyz * light.ambient, sampled_texture.w);
+
 
 	return ambient + diffuse + specular;
 }
