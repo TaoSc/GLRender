@@ -77,7 +77,7 @@ bool Renderer::init()
 		SDL_Quit();
 		return false;
 	}
-	//SDL_GL_SetSwapInterval(1);
+	SDL_GL_SetSwapInterval(1);
 
 
 	GLenum GLEW_initialization(glewInit());
@@ -193,7 +193,7 @@ void Renderer::mainLoop()
 	Shader basic_shader{ m_directory + "Shaders/basic.vert", m_directory + "Shaders/basic.frag" },
 		stencil_shader{ m_directory + "Shaders/stencil_outline.vert", m_directory + "Shaders/stencil_outline.frag" };
 	glUseProgram(stencil_shader.id());
-	stencil_shader.setUni("offset", 0.05f);
+	stencil_shader.setUni("offset", 0.07f);
 	stencil_shader.setUni("projection", projection);
 
 	glUseProgram(basic_shader.id());
@@ -247,13 +247,15 @@ void Renderer::mainLoop()
 
 
 	// Models loading
-	//Model nanosuit{ m_directory + "Models/nanosuit/nanosuit.obj", GL_REPEAT };
+	Model nanosuit{ m_directory + "Models/nanosuit/nanosuit.obj", GL_REPEAT };
 	Model blades{ m_directory + "Models/blades/blades.obj", GL_CLAMP_TO_EDGE };
 	Model window{ m_directory + "Models/transparent_window/transparent_window.obj", GL_CLAMP_TO_EDGE };
 
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glViewport(0, 0, m_window_width, m_window_height);
+
+	const std::vector<glm::vec3> objects = { glm::vec3(0, 1.f, -2.f), glm::vec3(0, 0.f, -3.f) };
 
 	// Main loop
 	while (!m_input.end())
@@ -307,12 +309,19 @@ void Renderer::mainLoop()
 		lamp_shader.setUni("view", view);
 
 		for (glm::vec3 const& light_pos : point_lights_pos) {
-			model = glm::mat4(1.f);
-			model = glm::translate(model, light_pos);
+			model = glm::translate(glm::mat4(1.f), light_pos);
 			model = glm::scale(model, glm::vec3(0.2f));
 			lamp_shader.setUni("model", model);
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+
+		// Distance sorting
+		std::map<float, glm::vec3> sorted;
+		for (size_t i = 0; i < objects.size(); i++)
+		{
+			float distance = glm::length(camera.getPosition() - objects[i]);
+			sorted[distance] = objects[i];
 		}
 
 
@@ -329,20 +338,26 @@ void Renderer::mainLoop()
 		glStencilMask(0xFF);
 		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-		model = glm::translate(glm::mat4(), glm::vec3(0, -10.f, -5.f));
+		model = glm::translate(glm::mat4(1.f), glm::vec3(0, -10.f, -5.f));
 		basic_shader.setUni("model", model);
-		//nanosuit.Draw(basic_shader);
+		nanosuit.Draw(basic_shader);
 
 		glStencilMask(0x00);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		model = glm::translate(glm::mat4(), glm::vec3(0, 1.f, -2.f));
-		basic_shader.setUni("model", model);
-		//blades.Draw(basic_shader);
 
-		model = glm::translate(glm::mat4(), glm::vec3(0, 0.f, -3.f));
-		basic_shader.setUni("model", model);
-		window.Draw(basic_shader);
+
+		for (std::map<float, glm::vec3>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it)
+		{
+			model = glm::translate(glm::mat4(), it->second);
+			basic_shader.setUni("model", model);
+
+			if (it->second == glm::vec3(0, 0.f, -3.f))
+				blades.Draw(basic_shader);
+			else
+				window.Draw(basic_shader);
+		}
+		
 
 		glDisable(GL_BLEND);
 		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
@@ -352,10 +367,10 @@ void Renderer::mainLoop()
 
 		if (update_projection)
 			stencil_shader.setUni("projection", projection);
-		model = glm::translate(glm::mat4(), glm::vec3(0, -10.f, -5.f));
+		model = glm::translate(glm::mat4(1.f), glm::vec3(0, -10.f, -5.f));
 		stencil_shader.setUni("view", view);
 		stencil_shader.setUni("model", model);
-		//nanosuit.Draw(stencil_shader, false);
+		nanosuit.Draw(stencil_shader, false);
 
 		glStencilMask(0xFF);
 		//glEnable(GL_DEPTH_TEST);
@@ -365,7 +380,7 @@ void Renderer::mainLoop()
 		SDL_GL_SwapWindow(m_window.get());
 
 		elapsed_time = SDL_GetTicks() - frame_start;
-		if (elapsed_time < frame_rate) // See what SDL_GL_SetSwapInterval does
+		if (elapsed_time < frame_rate)
 			SDL_Delay(frame_rate - elapsed_time);
 	}
 
