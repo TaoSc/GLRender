@@ -99,13 +99,13 @@ Mesh Model::processMesh(aiMesh* const& mesh, const aiScene* scene, GLuint const&
 std::vector<Texture *> Model::loadMaterialTextures(aiMaterial* const& material, aiTextureType const& type, std::string const& type_name, GLuint const& texture_wrapping)
 {
 	std::vector<Texture *> textures;
-	
+
 	for (unsigned int i = 0; i < material->GetTextureCount(type); i++)
 	{
 		aiString path;
 		material->GetTexture(type, i, &path);
 		std::string file_loc = m_directory + path.C_Str();
-		
+
 		bool skip = false;
 		for (Texture * const& texture_loaded : m_textures_loaded) {
 			if (std::strcmp(texture_loaded->path().c_str(), file_loc.c_str()) == 0) {
@@ -114,16 +114,16 @@ std::vector<Texture *> Model::loadMaterialTextures(aiMaterial* const& material, 
 				break;
 			}
 		}
-		
+
 		if (!skip) {
-			
+
 			Texture *texture = new Texture(file_loc);
-			
+
 			if (!texture->load(texture_wrapping))
 				std::cout << "Texture \"" << file_loc << "\" failed loading." << std::endl;
-			
+
 			//std::cout << texture.id() << " - " << type_name << " - " << file_loc << std::endl;
-			
+
 			textures.push_back(texture);
 			m_textures_loaded.push_back(texture);
 		}

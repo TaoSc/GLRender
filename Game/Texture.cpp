@@ -60,7 +60,7 @@ bool Texture::load(GLuint const& texture_wrapping, GLuint const& min_filter, GLu
 		format = GL_RGBA;
 
 	glBindTexture(GL_TEXTURE_2D, m_id);
-	std::cout << m_file << "-" << ((texture_wrapping == GL_CLAMP_TO_EDGE) ? "yay" : "booh") << std::endl;
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texture_wrapping);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture_wrapping);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min_filter);
