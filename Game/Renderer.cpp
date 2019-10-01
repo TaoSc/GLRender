@@ -198,6 +198,7 @@ void Renderer::mainLoop()
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glViewport(0, 0, m_window_width, m_window_height);
+	glEnable(GL_CULL_FACE);
 
 
 
@@ -289,6 +290,7 @@ void Renderer::mainLoop()
 		glStencilMask(0x00);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDisable(GL_CULL_FACE);
 
 		for (std::map<float, glm::vec3>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it)
 		{
@@ -307,6 +309,7 @@ void Renderer::mainLoop()
 		glStencilMask(0x00);
 		//glDisable(GL_DEPTH_TEST);
 		glUseProgram(stencil_shader.id());
+		glEnable(GL_CULL_FACE);
 
 		if (update_projection)
 			stencil_shader.setUni("projection", projection);
