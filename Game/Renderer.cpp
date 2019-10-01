@@ -131,64 +131,6 @@ void Renderer::mainLoop()
 	bool player_running(false);
 
 
-	// Vertex data
-	constexpr GLuint VERTEX_POS_ATTR = 0;
-	constexpr GLfloat vertices[] = {
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f,
-
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
-	};
-
-	GLuint vbo, lamp_vao;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glGenVertexArrays(1, &lamp_vao);
-	glBindVertexArray(lamp_vao);
-
-	glVertexAttribPointer(VERTEX_POS_ATTR, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<GLvoid*>(0));
-	glEnableVertexAttribArray(VERTEX_POS_ATTR);
-
-
 	// Shaders loading
 	Shader basic_shader{ m_directory + "Shaders/basic.vert", m_directory + "Shaders/basic.frag" },
 		stencil_shader{ m_directory + "Shaders/stencil_outline.vert", m_directory + "Shaders/stencil_outline.frag" };
@@ -209,10 +151,10 @@ void Renderer::mainLoop()
 	basic_shader.setUni("lights[0].specular", 1.0f, 1.0f, 1.0f);
 
 	glm::vec3 point_lights_pos[] = {
-		glm::vec3(0.7f,  0.2f,  2.0f),
+		glm::vec3(0.7f, 0.2f, 2.0f),
 		glm::vec3(2.3f, -3.3f, -4.0f),
-		glm::vec3(-4.0f,  2.0f, -12.0f),
-		glm::vec3(0.0f,  0.0f, -3.0f)
+		glm::vec3(-4.0f, 2.0f, -12.0f),
+		glm::vec3(0.0f, 0.0f, -3.0f)
 	};
 	size_t i = 1;
 	for (glm::vec3 const& light_pos : point_lights_pos) {
@@ -247,15 +189,18 @@ void Renderer::mainLoop()
 
 
 	// Models loading
+	Model cube{ m_directory + "Models/cube/cube.obj" };
 	Model nanosuit{ m_directory + "Models/nanosuit/nanosuit.obj", GL_REPEAT };
 	Model blades{ m_directory + "Models/blades/blades.obj", GL_CLAMP_TO_EDGE };
 	Model window{ m_directory + "Models/transparent_window/transparent_window.obj", GL_CLAMP_TO_EDGE };
+	const std::vector<glm::vec3> objects = { glm::vec3(0, 1.f, -2.f), glm::vec3(0, 0.f, -3.f) };
 
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glViewport(0, 0, m_window_width, m_window_height);
 
-	const std::vector<glm::vec3> objects = { glm::vec3(0, 1.f, -2.f), glm::vec3(0, 0.f, -3.f) };
+
+
 
 	// Main loop
 	while (!m_input.end())
@@ -302,7 +247,6 @@ void Renderer::mainLoop()
 		glDisable(GL_BLEND);
 		glStencilMask(0x00);
 		glUseProgram(lamp_shader.id());
-		glBindVertexArray(lamp_vao);
 
 		if (update_projection)
 			lamp_shader.setUni("projection", projection);
@@ -313,7 +257,7 @@ void Renderer::mainLoop()
 			model = glm::scale(model, glm::vec3(0.2f));
 			lamp_shader.setUni("model", model);
 
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			cube.Draw(lamp_shader);
 		}
 
 		// Distance sorting
@@ -346,7 +290,6 @@ void Renderer::mainLoop()
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
 		for (std::map<float, glm::vec3>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it)
 		{
 			model = glm::translate(glm::mat4(), it->second);
@@ -357,7 +300,7 @@ void Renderer::mainLoop()
 			else
 				window.Draw(basic_shader);
 		}
-		
+
 
 		glDisable(GL_BLEND);
 		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
@@ -383,6 +326,4 @@ void Renderer::mainLoop()
 		if (elapsed_time < frame_rate)
 			SDL_Delay(frame_rate - elapsed_time);
 	}
-
-	glDeleteBuffers(1, &vbo);
 }
