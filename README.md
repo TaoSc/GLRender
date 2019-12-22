@@ -1,5 +1,8 @@
-# Game
-Me doing a 3D OpenGL-based game, or something
+# GLRender
+Me doing an OpenGL-based 3D game from scratch, or something.
+
+At the moment, there is no gameplay or goal as I am still focused on implementing the underlying technologies.
+Currently using a tweaked Phong shading model that allows emissive textures and multitexturing. 
 
 ## Dependencies
 
